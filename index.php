@@ -1,14 +1,41 @@
 <?php
 
+define("UPLOAD_ERR_BADXML", 42220);
+
 class HistXML {
-    public $bytes = 0;
+    public $msgCount = 0;
     public $fileName = "";
     public $contents = "";
 
     public function __construct($xml, $fileName)
     {
         $this->fileName = $fileName;
-        $this->contents = $xml;
+        $this->contents = $this->XML2HTML($xml);
+    }
+
+    public function XML2HTML($xml)
+    {
+        $html = "";
+        $xml = @simplexml_load_string($xml);
+        if( $xml === false ) return false;
+
+        foreach($xml->Message as $msg)
+        {
+            // Get variables
+            $from = $msg->From->children()->User["FriendlyName"]->__toString();
+            $date = $msg->attributes()["Date"]->__toString();
+            $time = $msg->attributes()["Time"]->__toString();
+            $fontStyle = $msg->Text->attributes()["Style"]->__toString();
+            $message   = $msg->Text->__toString();
+
+            // Print as HTML
+            $html .= "<p>$date - $time <strong>$from</strong>: <span style='$fontStyle'>$message</span></p>";
+
+            // Increment msgCount
+            $this->msgCount++;
+        }
+
+        return $html;
     }
 }
 
@@ -24,6 +51,10 @@ else
 {
     $histXML = new HistXML(file_get_contents($_FILES["xml"]["tmp_name"]),
                                              $_FILES["xml"]["name"]);
+    if( $histXML->contents === false )
+    {
+        define("FILE_ERROR", UPLOAD_ERR_BADXML);
+    }
 }}
 
 ?>
@@ -56,18 +87,20 @@ else
     </head>
     <body<?php if( $noInput ) echo " class='no-input'"; ?>>
         <div class="content">
-            <div class="title col-md-6">
+            <div class="title col-md-4 col-md-offset-2">
                 <h1>Messenger XML2HTML</h1>
                 <p>Read your old Messenger conversation history in XML and
                 remember the good old times!</p>
             </div>
-            <div class="input-form col-md-6">
-                <form class="form-horizontal" role="form" action="." method="post" enctype="multipart/form-data">
+            <div class="input-form col-md-4">
+                <form class="form-horizontal" role="form" action="."
+                        method="post" enctype="multipart/form-data">
                     <div class="form-group">
                         <label for="file-input" class="col-sm-4 control-label">
                         Load XML</label>
                         <div class="col-sm-8">
-                            <input type="file" style="width: 100%" id="file-input" name="xml">
+                            <input type="file" style="width: 100%"
+                                    id="file-input" name="xml">
                         </div>
                         <div class="col-sm-offset-4 col-sm-8 submit-col">
                             <input type="submit" class="btn btn-default">
@@ -78,7 +111,7 @@ else
             <div class='clearfix'></div>
         </div>
         <div class="content">
-            <div class="col-md-12">
+            <div class="col-md-8 col-md-offset-2">
 <?php if( defined("FILE_ERROR") ) { ?>
                 <div class="alert alert-danger" role="alert">
                     <strong>Woops!</strong>
@@ -95,6 +128,9 @@ case UPLOAD_ERR_PARTIAL:
 case UPLOAD_ERR_NO_FILE:
     echo "No file was uploaded!";
     break;
+case UPLOAD_ERR_BADXML:
+    echo "Bad XML format!";
+    break;
 default:
     echo "There was an error in the uploaded file.";
 }
@@ -104,7 +140,7 @@ default:
 <?php } else if( !$noInput ) {
     $fileSize = round($_FILES["xml"]["size"]);
     echo "<h4 class='text-center'>Remembering $histXML->fileName - " .
-         "$histXML->bytes bytes of history!</h4>";
+         "$histXML->msgCount messages of memories!</h4>";
     echo "<hr>";
     echo "<div class='conversation'>$histXML->contents</div>";
 } ?>
