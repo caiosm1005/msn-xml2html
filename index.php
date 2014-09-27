@@ -15,9 +15,15 @@ class HistXML {
 
     public function XML2HTML($xml)
     {
-        $html = "";
         $xml = @simplexml_load_string($xml);
         if( $xml === false ) return false;
+
+        $html = "<dl class='dl-horizontal'>";
+
+        $firstDate = true;
+        $lastDate  = null;
+        $lastTime  = null;
+        $lastFrom  = null;
 
         foreach($xml->Message as $msg)
         {
@@ -28,13 +34,48 @@ class HistXML {
             $fontStyle = $msg->Text->attributes()["Style"]->__toString();
             $message   = $msg->Text->__toString();
 
-            // Print as HTML
-            $html .= "<p>$date - $time <strong>$from</strong>: <span style='$fontStyle'>$message</span></p>";
+            $from = htmlspecialchars($from);
+            $date = htmlspecialchars($date);
+            $time = htmlspecialchars($time);
+            $message = htmlspecialchars($message);
+
+            // Remove seconds from time
+            $time = preg_replace("/:\d\d$/", "", $time);
+
+            // Make glorious first date title
+            if( $firstDate ) {
+                $html .= "<h1 class='text-center'>$date</h1>";
+                $lastDate = $date;
+            }
+
+            // Print date
+            if( $date != $lastDate ) {
+                $html .= "<dt>";
+                $html .= "$date";
+                $html .= "</dt>";
+            }
+
+            // Print user name
+            if( $from != $lastFrom || $time != $lastTime || $date != $lastDate ) {
+                $html .= "<dd class='username'>";
+                $html .= "$from says ($time):";
+                $html .= "</dd>";
+            }
+
+            // Print message
+            $html .= "<dd class='message' style='$fontStyle'>";
+            $html .= $message;
+            $html .= "</dd>";
 
             // Increment msgCount
             $this->msgCount++;
+            $firstDate = false;
+            $lastDate = $date;
+            $lastTime = $time;
+            $lastFrom = $from;
         }
 
+        $html .= "</dl>";
         return $html;
     }
 }
@@ -69,7 +110,22 @@ else
             margin-top: 20px;
         }
         .conversation {
-            overflow: auto;
+            word-break: break-all;
+        }
+        .conversation .username {
+            color: #B1B1B1;
+        }
+        .conversation .message {
+            padding-left: 20px;
+            position: relative;
+        }
+        .conversation .message:before {
+            content: '';
+            position: absolute;
+            width: 3px; height: 3px;
+            border-radius: 100%;
+            background-color: #B1B1B1;
+            top: 9px; left: 7px;
         }
         .no-input {
             margin-top: 18em;
