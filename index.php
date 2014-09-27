@@ -31,13 +31,15 @@ class HistXML {
             $from = $msg->From->children()->User["FriendlyName"]->__toString();
             $date = $msg->attributes()["Date"]->__toString();
             $time = $msg->attributes()["Time"]->__toString();
-            $fontStyle = $msg->Text->attributes()["Style"]->__toString();
             $message   = $msg->Text->__toString();
-
             $from = htmlspecialchars($from);
             $date = htmlspecialchars($date);
             $time = htmlspecialchars($time);
             $message = htmlspecialchars($message);
+
+            $fontStyle = "font-family: Arial, sans-serif; font-size: 10px; color: black";
+            if( isset($msg->Text->attributes()["Style"]) )
+                $fontStyle = $msg->Text->attributes()["Style"]->__toString();
 
             // Remove seconds from time
             $time = preg_replace("/:\d\d$/", "", $time);
@@ -50,9 +52,7 @@ class HistXML {
 
             // Print date
             if( $date != $lastDate ) {
-                $html .= "<dt>";
-                $html .= "$date";
-                $html .= "</dt>";
+                $html .= "<dt>$date</dt>";
             }
 
             // Print user name
