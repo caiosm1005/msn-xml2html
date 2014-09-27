@@ -91,9 +91,12 @@ default:
 
 ?>
                 </div>
-<?php } else if( !$noInput ) { ?>
-                Success.
-<?php } ?>
+<?php } else if( !$noInput ) {
+
+$fileSize = round($_FILES["xml"]["size"]);
+echo "<h3>Remembering {$_FILES["xml"]["name"]} - $fileSize bytes of history!</h3>";
+                
+} ?>
             </div>
         </div>
     </body>
