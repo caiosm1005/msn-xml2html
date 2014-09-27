@@ -1,5 +1,18 @@
 <?php
 
+class HistXML {
+    public $bytes = 0;
+    public $fileName = "";
+    public $contents = "";
+
+    public function __construct($xml, $fileName)
+    {
+        $this->fileName = $fileName;
+        $this->contents = $xml;
+    }
+}
+
+// Check for file input
 $noInput = !isset($_FILES["xml"]);
 
 if( !$noInput ) {
@@ -9,7 +22,8 @@ if( $_FILES["xml"]["error"] )
 }
 else
 {
-    // TODO: Parse XML
+    $histXML = new HistXML(file_get_contents($_FILES["xml"]["tmp_name"]),
+                                             $_FILES["xml"]["name"]);
 }}
 
 ?>
@@ -38,9 +52,6 @@ else
         .no-input .input-form .submit-col {
             text-align: left;
         }
-        .no-input hr {
-            display: none;
-        }
         </style>
     </head>
     <body<?php if( $noInput ) echo " class='no-input'"; ?>>
@@ -64,10 +75,9 @@ else
                     </div>
                 </form>
             </div>
-            <div class="clearfix"></div>
-            <hr>
+            <div class='clearfix'></div>
         </div>
-        <div class="content conversation">
+        <div class="content">
             <div class="col-md-12">
 <?php if( defined("FILE_ERROR") ) { ?>
                 <div class="alert alert-danger" role="alert">
@@ -92,10 +102,11 @@ default:
 ?>
                 </div>
 <?php } else if( !$noInput ) {
-
-$fileSize = round($_FILES["xml"]["size"]);
-echo "<h3>Remembering {$_FILES["xml"]["name"]} - $fileSize bytes of history!</h3>";
-                
+    $fileSize = round($_FILES["xml"]["size"]);
+    echo "<h4 class='text-center'>Remembering $histXML->fileName - " .
+         "$histXML->bytes bytes of history!</h4>";
+    echo "<hr>";
+    echo "<div class='conversation'>$histXML->contents</div>";
 } ?>
             </div>
         </div>
