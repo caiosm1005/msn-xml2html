@@ -1,7 +1,7 @@
 msn-xml2html
 ============
 
-A PHP tool to read old MSN Messenger history XML files.
+A PHP tool for reading old MSN Messenger history XML files.
 
 How to use
 ----------
