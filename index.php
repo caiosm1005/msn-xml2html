@@ -106,7 +106,7 @@ else
 <html>
     <head>
         <meta charset="UTF-8">
-        <title>Messenger XML2HTML</title>
+        <title>MSN Messenger XML2HTML</title>
         <link href="bootstrap.min.css" rel="stylesheet" type="text/css">
         <style>
         .input-form {
@@ -155,7 +155,7 @@ else
     <body<?php if( $noInput ) echo " class='no-input'"; ?>>
         <div class="content">
             <div class="title col-md-4 col-md-offset-2">
-                <h1>Messenger XML2HTML</h1>
+                <h1>MSN Messenger XML2HTML</h1>
                 <p>Read your old Messenger conversation history in XML and
                 remember the good old times!</p>
             </div>
