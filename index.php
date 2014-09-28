@@ -25,7 +25,7 @@ class HistXML {
         $lastTime  = null;
         $lastFrom  = null;
 
-        foreach($xml->Message as $msg)
+        try { foreach($xml->Message as $msg)
         {
             // Get variables
             $from = $msg->From->children()->User["FriendlyName"]->__toString();
@@ -37,7 +37,7 @@ class HistXML {
             $time = htmlspecialchars($time);
             $message = htmlspecialchars($message);
 
-            $fontStyle = "font-family: Arial, sans-serif; font-size: 10px; color: black";
+            $fontStyle = "font-family: Arial, sans-serif; font-size: 10pt; color: black";
             if( isset($msg->Text->attributes()["Style"]) )
                 $fontStyle = $msg->Text->attributes()["Style"]->__toString();
 
@@ -46,7 +46,7 @@ class HistXML {
 
             // Make glorious first date title
             if( $firstDate ) {
-                $html .= "<h1 class='text-center'>$date</h1>";
+                $html .= "<h1 class='first-date'>$date</h1>";
                 $lastDate = $date;
             }
 
@@ -73,6 +73,9 @@ class HistXML {
             $lastDate = $date;
             $lastTime = $time;
             $lastFrom = $from;
+        }}
+        catch(Exception $err) {
+            return false;
         }
 
         $html .= "</dl>";
@@ -111,6 +114,11 @@ else
         }
         .conversation {
             word-break: break-all;
+        }
+        .conversation .first-date {
+            text-align: center;
+            font-size: 7em;
+            margin: 0.95em 0;
         }
         .conversation .username {
             color: #B1B1B1;
