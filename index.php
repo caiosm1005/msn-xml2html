@@ -52,7 +52,7 @@ class HistXML {
 
             // Print date
             if( $date != $lastDate ) {
-                $html .= "<dt>$date</dt>";
+                $html .= "<dt class='date'>$date</dt>";
             }
 
             // Print user name
@@ -120,8 +120,11 @@ else
             font-size: 7em;
             margin: 0.95em 0;
         }
-        .conversation .username {
+        .conversation .username, .conversation .date {
             color: #B1B1B1;
+        }
+        .conversation .date {
+            font-weight: normal;
         }
         .conversation .message {
             padding-left: 20px;
