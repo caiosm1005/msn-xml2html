@@ -129,6 +129,7 @@ else
         .conversation .message {
             padding-left: 20px;
             position: relative;
+            -webkit-print-color-adjust: exact;
         }
         .conversation .message:before {
             content: '';
@@ -150,10 +151,20 @@ else
         .no-input .input-form .submit-col {
             text-align: left;
         }
+
+        @media print {
+            .first-date {
+                margin: 0.5em 0;
+                font-size: 3em;
+            }
+            body:not(.no-input) .header {
+                display: none;
+            }
+        }
         </style>
     </head>
     <body<?php if( $noInput ) echo " class='no-input'"; ?>>
-        <div class="content">
+        <div class="content header">
             <div class="title col-md-4 col-md-offset-2">
                 <h1>MSN Messenger XML2HTML</h1>
                 <p>Read your old Messenger conversation history in XML and
